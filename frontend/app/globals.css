@@ -126,5 +126,8 @@
   }
   html {
     @apply font-sans;
+    /* Reserve the scrollbar track at all times, so expanding or collapsing the
+       entry form cannot change the page width under it. */
+    scrollbar-gutter: stable;
   }
 }
