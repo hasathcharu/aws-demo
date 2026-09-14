@@ -18,14 +18,18 @@ function formatDate(value: string) {
 
 type Props = {
   entry: Entry
+  onView: (entry: Entry) => void
   onEdit: (entry: Entry) => void
   onDelete: (entry: Entry) => void
   busy: boolean
 }
 
-export function EntryCard({ entry, onEdit, onDelete, busy }: Props) {
+export function EntryCard({ entry, onView, onEdit, onDelete, busy }: Props) {
   return (
-    <Card>
+    <Card
+      onClick={() => onView(entry)}
+      className="cursor-pointer transition-shadow hover:shadow-md"
+    >
       <CardContent className="flex gap-4">
         {entry.image_url && (
           // Plain <img> rather than next/image: the S3 bucket hostname comes
@@ -39,13 +43,18 @@ export function EntryCard({ entry, onEdit, onDelete, busy }: Props) {
         )}
 
         <div className="min-w-0 flex-1">
-          <button
-            type="button"
-            onClick={() => onEdit(entry)}
-            className="text-left text-base font-medium hover:underline"
-          >
-            {entry.title}
-          </button>
+          <h3>
+            <button
+              type="button"
+              className="text-left text-base font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              onClick={(event) => {
+                event.stopPropagation()
+                onView(entry)
+              }}
+            >
+              {entry.title}
+            </button>
+          </h3>
 
           <div className="mt-1 flex flex-wrap items-center gap-2">
             {entry.location && <Badge variant="secondary">{entry.location}</Badge>}
@@ -58,10 +67,26 @@ export function EntryCard({ entry, onEdit, onDelete, busy }: Props) {
         </div>
 
         <div className="flex shrink-0 flex-col gap-2">
-          <Button variant="outline" size="sm" onClick={() => onEdit(entry)} disabled={busy}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={(event) => {
+              event.stopPropagation()
+              onEdit(entry)
+            }}
+            disabled={busy}
+          >
             Edit
           </Button>
-          <Button variant="destructive" size="sm" onClick={() => onDelete(entry)} disabled={busy}>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={(event) => {
+              event.stopPropagation()
+              onDelete(entry)
+            }}
+            disabled={busy}
+          >
             Delete
           </Button>
         </div>

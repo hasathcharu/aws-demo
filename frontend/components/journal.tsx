@@ -5,6 +5,7 @@ import { useState, useTransition } from "react"
 
 import { deleteEntryAction } from "@/app/actions"
 import { EntryCard } from "@/components/entry-card"
+import { EntryDetailsDialog } from "@/components/entry-details-dialog"
 import { EntryForm } from "@/components/entry-form"
 import {
   Accordion,
@@ -37,6 +38,7 @@ export function Journal({ entries, locations, filter, totalCount, loadError }: P
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [editing, setEditing] = useState<Entry | null>(null)
+  const [viewing, setViewing] = useState<Entry | null>(null)
   const [error, setError] = useState("")
 
   // The form starts open only when there is nothing to look at yet; once there
@@ -71,6 +73,10 @@ export function Journal({ entries, locations, filter, totalCount, loadError }: P
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
+  function handleView(entry: Entry) {
+    setViewing(entry)
+  }
+
   function handleCancel() {
     setEditing(null)
     setFormOpen(totalCount === 0)
@@ -85,6 +91,7 @@ export function Journal({ entries, locations, filter, totalCount, loadError }: P
       return
     }
     if (editing?.id === entry.id) setEditing(null)
+    if (viewing?.id === entry.id) setViewing(null)
     setError("")
   }
 
@@ -159,12 +166,15 @@ export function Journal({ entries, locations, filter, totalCount, loadError }: P
           <EntryCard
             key={entry.id}
             entry={entry}
+            onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
             busy={pending}
           />
         ))}
       </div>
+
+      <EntryDetailsDialog entry={viewing} onClose={() => setViewing(null)} />
     </main>
   )
 }
